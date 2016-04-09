@@ -11,6 +11,19 @@ public class Certification {
 	/**
 	 * @return the certID
 	 */
+	public Certification()
+	{
+		
+	}
+	public Certification(int certID,String certName, String certSponsor, String certExpiry)
+	{
+		this.certID = certID;
+		this.certName = certName;
+		this.certSponsor = certSponsor;
+		this.certExpiry = certExpiry;
+		
+	}
+	
 	public int getCertID() {
 		return certID;
 	}
