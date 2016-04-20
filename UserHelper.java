@@ -16,16 +16,16 @@ import model.User;
  *
  */
 public class UserHelper {
-	private ConnectionHelper cs;
 	private Connection connection;
 	
-	public UserHelper(String dbName, String uname, String pwd){
-		this.connection = cs.doConnection(dbName, uname, pwd);
+	public UserHelper(){
+		this.connection = ConnectionHelper.doConnection();
 	}
+	
 	public boolean symbolChecker(String username){
 		boolean check = true;
 		String symbols [] = {"!","%","]","/",".","?","!","("};
-		for(int i=0; i<=symbols.length; i++){
+		for(int i=0; i<symbols.length; i++){
 			if(username.contains(symbols[i])){
 				check = false;
 			}
@@ -40,7 +40,7 @@ public class UserHelper {
 	{
 		User user = null;
 		//Create a query that will find all results that match the username and password
-		String query = "SELECT * FROM users WHERE uname = ? AND pwd = ?";
+		String query = "SELECT * FROM user WHERE logon = ? AND password = ?";
 		
 		try {
 			//Set the username and password to the parameters

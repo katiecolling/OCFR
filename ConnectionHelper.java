@@ -12,27 +12,43 @@ import java.sql.SQLException;
  * Sole purpose of this class is to reduce the code used to connect to servers.
  * Username and Password are left as parameters to allow any user to make a connection
  * as long as they have access to the database
+ * 
+ * 
+ * ADD THESE FOR CSV
+ * response.setHeader("Content-Description","File Transer");
+ * response.setHeader("Content-Disposition","attachment; filename=books.csv");
+ * response.setContentType("text/csv");
  */
 public class ConnectionHelper {
 	
-	private static Connection connection;
+	private static final String dbName = "ocfr_katemasondavid";
+	private static final String uname = "root";
+	private static final String pwd  = "1981";
+	
+	private static Connection connection = null;
 	public ConnectionHelper(){}
 
-	public Connection doConnection(String dbName, String uname, String pwd){
-		//Create a string that will connect the jdbc and mysql server
+	static public Connection doConnection(){
+		if (connection != null) {
+			return connection;
+		}
+		
 		String url = "jdbc:mysql://localhost:3306/" + dbName;
 		
 		try {
-			//Initiate the driver that will connect the two entities
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			connection = DriverManager.getConnection(url, uname, pwd);
-			
-			
-		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e) {
-			// TODO Auto-generated catch block
+			connection = DriverManager.getConnection(url, uname, pwd); 
+		} catch (InstantiationException | IllegalAccessException
+				| ClassNotFoundException | SQLException e) {
+			// NOTE: Errors that occur here will show in the Console, but will not
+			// stop the web app from running. These errors could be handled better.
 			e.printStackTrace();
 		}
-		//return the connection to the database
+		
+		if (connection == null) {
+			throw new RuntimeException("Error connecting to database.");
+		}
+		
 		return connection;
 	}
 

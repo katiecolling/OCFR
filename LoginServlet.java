@@ -14,7 +14,8 @@ import dbHelpers.UserHelper;
 import model.User;
 
 /**
- * Servlet implementation class LoginServlet
+ * THINGS TO WORKON:
+ *   -Login Attempts and Attempts Validation do not match up!
  */
 @WebServlet("/loginServlet")
 public class LoginServlet extends HttpServlet {
@@ -44,7 +45,7 @@ public class LoginServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//create userhelper object
-		UserHelper uh = new UserHelper("fillThisIn", "root", "1981");
+		UserHelper uh = new UserHelper();
 		//initialize session
 		session = request.getSession();
 		if(session.getAttribute("attempts")==null){
@@ -55,17 +56,14 @@ public class LoginServlet extends HttpServlet {
 			message = "Error: Number of Login Attempts Exceeded";
 			request.setAttribute("message", message);
 			url = "index.jsp";
+			
+			RequestDispatcher dispatcher = request.getRequestDispatcher(url);
+			dispatcher.forward(request, response);
 		}
 		else{
 		//initialize form username and password
 		  String username = request.getParameter("username");
 		  String password = request.getParameter("password");
-		  
-		//validate username and password
-		  if(uh.symbolChecker(username)==false || uh.symbolChecker(password)==false){
-			  url = "index.jsp";
-			  message = "Error: Use of unaccepted symbols";
-		  }
 		  
 		 //Use the user helper class to see if username and password match any records in the DB
 		 //If match, user becomes the authenticated username and password
@@ -76,18 +74,32 @@ public class LoginServlet extends HttpServlet {
 			session = request.getSession(true);
 			session.setAttribute("user", user);
 			url = "home.jsp";
+			
+			
 		}
 		else{
-			//send it back to login with message if false, move it to home if true
-			message = "Error: There is no record of that username and password. /nPlease Try Again!";
-			request.setAttribute("message", message);
-			url = "index.jsp";
+			//validate username and password
+			  if(uh.symbolChecker(username)==false || uh.symbolChecker(password)==false){
+				  url = "index.jsp";
+				  message = "Error: Use of unaccepted symbols";
+				  request.setAttribute("message", message);
+				  
+				  attempts++;
+				  session.setAttribute("attempts", attempts);
+			  }
+			  else{
+				  //send it back to login with message if false, move it to home if true
+				  message = "Error: There is no record of that username and password. Please Try Again!";
+				  request.setAttribute("message", message);
+				  url = "index.jsp";
 			
-			attempts++;
-			session.setAttribute("attempts", attempts);
+				  attempts++;
+				  session.setAttribute("attempts", attempts);
+				  }
 		}
 		
 		//Move all of the information to the destined url
+		System.out.println(attempts);
 		RequestDispatcher dispatcher = request.getRequestDispatcher(url);
 		dispatcher.forward(request, response);
 
